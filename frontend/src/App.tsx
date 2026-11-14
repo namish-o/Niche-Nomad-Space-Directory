@@ -21,6 +21,8 @@ import DataPanel from "./data/DataPanel";
 import { AladinPanel, OverlayPanel, SourceCard, mjdNow, useOverlayCanvas, useOverlays } from "./overlays";
 import Info from "./glossary/Info";
 import GlossaryPanel from "./glossary/GlossaryPanel";
+import Tour from "./tour/Tour";
+import { VIEWER_STEPS } from "./tour/steps";
 
 const IMAGE_SIZE = 384; // pixels requested from the backend per frame
 
@@ -136,6 +138,7 @@ export default function App() {
             Anything that moves between frames could be a nearby object.{" "}
             <a href="#glossary" onClick={() => document.getElementById("glossary")?.setAttribute("open", "")}>New to astronomy? See the words explained</a>
           </p>
+          <Tour steps={VIEWER_STEPS} part="viewer" />
           <a className="new-search" href={window.location.pathname}>New search</a>
         </header>
       )}

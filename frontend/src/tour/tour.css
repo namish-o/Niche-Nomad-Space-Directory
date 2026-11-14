@@ -1,0 +1,27 @@
+.tour-retake {
+  flex: none; padding: var(--space-xs) var(--space-md); font-size: var(--text-sm);
+  background: none; border: var(--rule-hair) solid var(--color-rule-2); color: var(--color-muted);
+}
+.tour-retake:hover { color: var(--color-accent); border-color: var(--color-accent); }
+
+.tour { position: fixed; inset: 0; z-index: 1000; }
+.tour-scrim { position: absolute; inset: 0; }
+.tour-spot {
+  position: fixed; pointer-events: none; outline: 2px solid var(--color-accent);
+  box-shadow: 0 0 0 100vmax oklch(8% 0.01 255 / 0.72);
+  transition: top var(--dur-short) var(--ease-out), left var(--dur-short) var(--ease-out),
+    width var(--dur-short) var(--ease-out), height var(--dur-short) var(--ease-out);
+}
+.tour-card {
+  position: fixed; width: min(360px, calc(100vw - 32px)); padding: var(--space-lg);
+  background: var(--color-paper-3); color: var(--color-ink);
+  border: var(--rule-hair) solid var(--color-rule-2); border-top: 3px solid var(--color-accent);
+}
+.tour-card:focus { outline: none; }
+.tour-card h2 { margin: 0 0 var(--space-xs); font: 500 20px/1.2 var(--font-serif); }
+.tour-card p { margin: 0; font-size: var(--text-sm); line-height: 1.5; color: var(--color-muted); }
+.tour-card .tour-count { font: var(--text-xs) var(--font-mono); color: var(--color-accent); margin-bottom: var(--space-xs); letter-spacing: 0.06em; }
+.tour-actions { display: flex; gap: var(--space-sm); margin-top: var(--space-lg); align-items: center; }
+.tour-skip { margin-right: auto; background: none; border: none; padding-left: 0; color: var(--color-faint); text-decoration: underline; }
+.tour-skip:hover { color: var(--color-ink); }
+@media (prefers-reduced-motion: reduce) { .tour-spot { transition: none; } }

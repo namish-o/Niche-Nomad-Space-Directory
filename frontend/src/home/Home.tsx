@@ -1,6 +1,8 @@
 // Landing page: type a position (or click the sky, or pick a known mover) and
 // it opens the blink viewer there. The viewer reads its position from the URL,
 // so all this page does is build that URL.
+import Tour from "../tour/Tour";
+import { HOME_STEPS } from "../tour/steps";
 import { useEffect, useMemo, useState } from "react";
 import { fetchTargets, resolveQuery, type Target } from "../api/client";
 import { eclipticToEquatorial, formatDec, formatRa, galacticToEquatorial } from "../lib/sky";
@@ -80,6 +82,7 @@ export default function Home({ onGo }: Props) {
           SPHEREx Blink
         </span>
         <span className="home-bar-note">NASA Space Apps 2026, Planet X and SPHEREx</span>
+        <Tour steps={HOME_STEPS} part="home" />
       </header>
 
       <main className="home-main">
