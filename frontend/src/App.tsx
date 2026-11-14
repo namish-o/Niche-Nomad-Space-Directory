@@ -74,7 +74,7 @@ export default function App() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
   // On a desktop the picture is as big as the window allows: everything below
-  // the bars, with the player beside it (see .viewer in styles.css).
+  // the bars, with the player and cards beside it (see .viewer in styles.css).
   const stageRef = useRef<HTMLDivElement>(null);
   const [stageTop, setStageTop] = useState(0);
   const [wide, setWide] = useState(() => window.matchMedia("(min-width: 1100px)").matches);
@@ -85,6 +85,7 @@ export default function App() {
       setWide(mq.matches);
       const el = stageRef.current;
       if (el) setStageTop(Math.round(el.getBoundingClientRect().top + window.scrollY));
+
     };
     measure();
     const ro = new ResizeObserver(measure);
@@ -198,55 +199,66 @@ export default function App() {
         </section>
 
         <aside>
-          <h2>This view</h2>
-          <dl>
-            <dt>RA<Info term="ra" /></dt>
-            <dd>{formatRa(state.ra)} <span className="muted">({state.ra.toFixed(5)}°)</span></dd>
-            <dt>Dec<Info term="dec" /></dt>
-            <dd>{formatDec(state.dec)} <span className="muted">({state.dec.toFixed(5)}°)</span></dd>
-            <dt>Field<Info term="fov" /></dt>
-            <dd>{formatFov(state.fov)} × {formatFov(state.fov)}, north up, east left</dd>
-          </dl>
-          <DescribePanel d={description} onCentre={(ra, dec) => update({ ra, dec })} />
-          <SavedPanel
-            state={state}
-            suggestedName={description.curated?.name ?? description.highlight?.name ?? `RA ${formatRa(state.ra)} Dec ${formatDec(state.dec)}`}
-            description={shortLabel(description)}
-            onOpen={(query) => update({ ...parseUrl(query), embed: false, controls: true })}
-          />
-
-          <label className="check">
-            <input type="checkbox" checked={state.marker} onChange={(e) => update({ marker: e.target.checked })} />
-            Mark the target position
-          </label>
-          <label className="check">
-            <input type="checkbox" checked={state.invert} onChange={(e) => update({ invert: e.target.checked })} />
-            Invert colours
-          </label>
-          <OverlayPanel overlays={overlays} />
-
-          <h2>Move around the sky<Info term="arcmin" /></h2>
-          <SkyNavigator ra={state.ra} dec={state.dec} fov={state.fov} targets={targets} onJump={(ra, dec) => update({ ra, dec })} />
-          <p className="hint">
-            Scroll or pinch to zoom, drag to pan (Shift+arrows or WASD on a keyboard, + and − to zoom, 0 to
-            fit). Double-click re-centres. Space plays or pauses, arrow keys step one frame.
-          </p>
-
-          <h2>Add / subtract images<Info term="difference" /></h2>
-          <ImageOpsPanel state={state} frames={frames.frames} current={current} label={ops.label} onChange={update} />
-
-          <DataPanel view={view} band={state.band} frame={current} playing={player.playing} />
-
-          <p className="hint">
-            Each SPHEREx exposure sees a slightly different wavelength at this spot, so brightness can
-            change from frame to frame even for ordinary stars.
-          </p>
-
-          <GlossaryPanel />
-
-          <h2>Share</h2>
-          <EmbedPanel state={state} />
-          <AladinPanel ra={state.ra} dec={state.dec} fov={state.fov} />
+          <section className="card">
+            <h2>This view</h2>
+            <dl>
+              <dt>RA<Info term="ra" /></dt>
+              <dd>{formatRa(state.ra)} <span className="muted">({state.ra.toFixed(5)}°)</span></dd>
+              <dt>Dec<Info term="dec" /></dt>
+              <dd>{formatDec(state.dec)} <span className="muted">({state.dec.toFixed(5)}°)</span></dd>
+              <dt>Field<Info term="fov" /></dt>
+              <dd>{formatFov(state.fov)} × {formatFov(state.fov)}, north up, east left</dd>
+            </dl>
+            <label className="check">
+              <input type="checkbox" checked={state.marker} onChange={(e) => update({ marker: e.target.checked })} />
+              Mark the target position
+            </label>
+            <label className="check">
+              <input type="checkbox" checked={state.invert} onChange={(e) => update({ invert: e.target.checked })} />
+              Invert colours
+            </label>
+          </section>
+          <section className="card">
+            <DescribePanel d={description} onCentre={(ra, dec) => update({ ra, dec })} />
+          </section>
+          <section className="card">
+            <h2>Add / subtract images<Info term="difference" /></h2>
+            <ImageOpsPanel state={state} frames={frames.frames} current={current} label={ops.label} onChange={update} />
+          </section>
+          <section className="card">
+            <OverlayPanel overlays={overlays} />
+          </section>
+          <section className="card">
+            <DataPanel view={view} band={state.band} frame={current} playing={player.playing} />
+            <p className="hint">
+              Each SPHEREx exposure sees a slightly different wavelength at this spot, so brightness can
+              change from frame to frame even for ordinary stars.
+            </p>
+          </section>
+          <section className="card">
+            <h2>Move around the sky<Info term="arcmin" /></h2>
+            <SkyNavigator ra={state.ra} dec={state.dec} fov={state.fov} targets={targets} onJump={(ra, dec) => update({ ra, dec })} />
+            <p className="hint">
+              Scroll or pinch to zoom, drag to pan (Shift+arrows or WASD on a keyboard, + and − to zoom, 0 to
+              fit). Double-click re-centres. Space plays or pauses, arrow keys step one frame.
+            </p>
+          </section>
+          <section className="card">
+            <SavedPanel
+              state={state}
+              suggestedName={description.curated?.name ?? description.highlight?.name ?? `RA ${formatRa(state.ra)} Dec ${formatDec(state.dec)}`}
+              description={shortLabel(description)}
+              onOpen={(query) => update({ ...parseUrl(query), embed: false, controls: true })}
+            />
+          </section>
+          <section className="card">
+            <GlossaryPanel />
+          </section>
+          <section className="card">
+            <h2>Share</h2>
+            <EmbedPanel state={state} />
+            <AladinPanel ra={state.ra} dec={state.dec} fov={state.fov} />
+          </section>
         </aside>
       </main>
 

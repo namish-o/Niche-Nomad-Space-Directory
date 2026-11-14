@@ -60,9 +60,9 @@
   --space-xl: 24px;
   --space-2xl: 32px;
 
-  --radius-card: 2px;
-  --radius-pill: 2px;
-  --radius-chip: 2px;
+  --radius-card: 10px;
+  --radius-pill: 6px;
+  --radius-chip: 4px;
   --rule-hair: 1px;
   --tracking-display: -0.025em;
 
@@ -418,7 +418,7 @@ summary:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 
   flex-wrap: nowrap;
 }
 .app:not(.embed) .logo { width: 30px; height: 30px; }
-.app:not(.embed) .topbar h1 { font: 500 22px/1 var(--font-serif); letter-spacing: -0.01em; }
+.app:not(.embed) .topbar h1 { font-size: 20px; line-height: 1.1; }
 .home-link { color: inherit; text-decoration: none; }
 .home-link:hover { color: var(--color-accent); }
 .app:not(.embed) .tagline { display: none; }
@@ -435,43 +435,43 @@ summary:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 
   background: var(--color-paper);
 }
 .app:not(.embed) main { margin: 0; gap: 0; grid-template-columns: minmax(0, 1fr) 380px; align-items: start; }
-.app:not(.embed) .viewer { padding: var(--space-xl); }
 .app:not(.embed) .stage, .app:not(.embed) .player { max-width: none; }
-/* Wide screens: picture on the left at full height, player beside it. */
+/* Wide screens: the picture is a square sized to the window height and stays
+   in view; everything else fills the rest of the width as a grid of cards. */
 @media (min-width: 1100px) {
-  .app:not(.embed) main { grid-template-columns: minmax(0, 1fr) 340px; }
-  .app:not(.embed) .viewer {
-    display: grid; grid-template-columns: minmax(0, var(--side, 1fr)) 260px; gap: var(--space-lg);
-    align-items: start; justify-content: center; padding: var(--space-md) var(--space-lg);
+  .app:not(.embed) main {
+    grid-template-columns: auto minmax(0, 1fr); gap: var(--space-lg);
+    padding: var(--space-lg) var(--space-xl); align-items: start;
   }
-  .app:not(.embed) .stage { grid-column: 1; grid-row: 1 / span 3; margin: 0; width: 100%; }
-  /* the column is already sized to fit; the inline cap is only for embeds */
+  /* picture on the left, player and cards on the right */
+  .app:not(.embed) .viewer { display: contents; }
+  .app:not(.embed) .stage {
+    grid-column: 1; grid-row: 1 / span 3; position: sticky; top: var(--space-sm);
+    margin: 0; width: var(--side, 560px);
+  }
   .app:not(.embed) .canvas-wrap { max-width: none !important; }
-  .app:not(.embed) .viewer > :not(.stage) { grid-column: 2; margin: 0; max-width: none; }
-  .app:not(.embed) .player .player-row > button { flex: 1 1 auto; }
-  .app:not(.embed) .speed { margin-left: 0; flex-basis: 100%; }
-  .app:not(.embed) .speed input { flex: 1; min-width: 0; }
-  .app:not(.embed) .frame-info { flex-direction: column; gap: var(--space-2xs); }
-  .app:not(.embed) .controls { padding-top: var(--space-sm); padding-bottom: var(--space-sm); }
-  /* the target note repeats in "What's here?" on the right */
+  .app:not(.embed) .player { grid-column: 2; grid-row: 1; margin: 0; max-width: none; }
+  .app:not(.embed) .ops-banner { grid-column: 2; grid-row: 2; margin: 0; text-align: left; }
+  .app:not(.embed) aside { grid-column: 2; grid-row: 3; }
+  .app:not(.embed) .ops-banner, .app:not(.embed) .embed-credit { max-width: none; }
   .app:not(.embed) .controls .note { display: none; }
-}
-@media (min-width: 1100px) and (max-width: 1440px) {
-  .app:not(.embed) main { grid-template-columns: minmax(0, 1fr) 300px; }
-  .app:not(.embed) aside { padding: var(--space-lg); }
+  .app:not(.embed) aside {
+    position: static; padding: 0; border: 0; background: none;
+    columns: 300px; column-gap: var(--space-lg);
+  }
+  .app:not(.embed) aside > * { break-inside: avoid; }
+  .app:not(.embed) aside h2 { break-after: avoid; }
 }
 .app:not(.embed) aside {
-  position: sticky; top: 0; max-height: 100vh; overflow-y: auto; overscroll-behavior: contain;
-  border-width: 0 0 0 var(--rule-hair); border-radius: 0; background: var(--color-paper-3);
-  padding: var(--space-xl);
-  scrollbar-width: thin; scrollbar-color: var(--color-rule-2) transparent;
+  background: var(--color-paper-2); border: var(--rule-hair) solid var(--color-rule);
 }
 .app:not(.embed) .status { margin: 0; border-width: var(--rule-hair) 0; border-radius: 0; padding: var(--space-md) var(--space-xl); }
 .app:not(.embed) .credits { margin: 0; padding: var(--space-lg) var(--space-xl) var(--space-xl); text-align: left; }
 
-@media (max-width: 960px) {
-  .app:not(.embed) main { grid-template-columns: minmax(0, 1fr); }
-  .app:not(.embed) aside { position: static; max-height: none; overflow: visible; border-width: var(--rule-hair) 0 0 0; }
+@media (max-width: 1099px) {
+  .app:not(.embed) main { grid-template-columns: minmax(0, 1fr); padding: var(--space-lg); gap: var(--space-lg); }
+  .app:not(.embed) .viewer { padding: 0; }
+  .app:not(.embed) aside { position: static; border-radius: var(--radius-card); padding: var(--space-lg); }
   .app:not(.embed) .stage, .app:not(.embed) .player { max-width: 760px; }
 }
 @media (max-width: 640px) {
@@ -479,7 +479,7 @@ summary:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 
   .app:not(.embed) .intro { flex-basis: 100%; order: 3; }
   .app:not(.embed) .brand { margin-right: auto; }
   .app:not(.embed) .controls, .app:not(.embed) .status { padding: var(--space-md) var(--space-lg); }
-  .app:not(.embed) .viewer { padding: var(--space-lg) var(--space-md); }
+  .app:not(.embed) main { padding: var(--space-md); }
   .app:not(.embed) aside { padding: var(--space-lg); }
 }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
@@ -489,3 +489,16 @@ summary:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 
   .app:not(.embed) .intro { display: none; }
   .app:not(.embed) .topbar { justify-content: space-between; padding-top: var(--space-sm); padding-bottom: var(--space-sm); }
 }
+
+/* Side cards */
+aside .card + .card { margin-top: 0; }
+.app:not(.embed) aside, .app:not(.embed) aside.card { background: none; border: 0; padding: 0; }
+aside .card {
+  background: var(--color-paper-2); border: var(--rule-hair) solid var(--color-rule);
+  border-radius: var(--radius-card); padding: var(--space-lg); margin: 0 0 var(--space-lg);
+  break-inside: avoid;
+}
+aside .card > h2:first-child, aside .card > :first-child h2:first-of-type { margin-top: 0; padding-top: 0; border-top: 0; }
+aside .card > :last-child { margin-bottom: 0; }
+aside .card .overlay-panel, aside .card .aladin-panel { margin-top: 0; padding-top: 0; border-top: 0; }
+aside .card .aladin-panel { margin-top: var(--space-md); }
