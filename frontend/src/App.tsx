@@ -102,13 +102,13 @@ export default function App() {
             </svg>
             <div>
               <h1>SPHEREx Blink</h1>
-              <p className="tagline">Planet X hunter · NASA Space Apps 2026</p>
+              <p className="tagline">A Planet X hunter for NASA Space Apps 2026</p>
             </div>
           </div>
           <p className="intro">
             Flip through NASA SPHEREx<Info term="spherex" /> infrared<Info term="infrared" /> images of one patch of sky over time<Info term="blink" />. Stars stay put.
             Anything that moves between frames could be a nearby object.{" "}
-            <a href="#glossary" onClick={() => document.getElementById("glossary")?.setAttribute("open", "")}>New to astronomy? Words explained ↓</a>
+            <a href="#glossary" onClick={() => document.getElementById("glossary")?.setAttribute("open", "")}>New to astronomy? See the words explained</a>
           </p>
         </header>
       )}
@@ -154,9 +154,9 @@ export default function App() {
           {(!state.embed || state.controls) && <PlayerControls player={player} frames={frames.frames} />}
           {state.embed && (
             <p className="embed-credit">
-              SPHEREx images: NASA/JPL-Caltech/IRSA ·{" "}
+              SPHEREx images: NASA/JPL-Caltech/IRSA.{" "}
               <a href={absoluteUrl(state, { embed: false })} target="_blank" rel="noreferrer">
-                Open full viewer ↗
+                Open the full viewer
               </a>
             </p>
           )}
