@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Controls from "./components/Controls";
 import EmbedPanel from "./components/EmbedPanel";
 import ImageOpsPanel from "./components/ImageOpsPanel";
@@ -71,7 +71,33 @@ export default function App() {
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
-  const maxSide = state.embed ? winHeight - (state.controls ? 190 : 50) : undefined;
+  // On a desktop the picture is as big as the window allows: everything below
+  // the bars, with the player beside it (see .viewer in styles.css).
+  const stageRef = useRef<HTMLDivElement>(null);
+  const [stageTop, setStageTop] = useState(0);
+  const [wide, setWide] = useState(() => window.matchMedia("(min-width: 1100px)").matches);
+  useEffect(() => {
+    if (state.embed) return;
+    const mq = window.matchMedia("(min-width: 1100px)");
+    const measure = () => {
+      setWide(mq.matches);
+      const el = stageRef.current;
+      if (el) setStageTop(Math.round(el.getBoundingClientRect().top + window.scrollY));
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(document.body);
+    mq.addEventListener("change", measure);
+    return () => {
+      ro.disconnect();
+      mq.removeEventListener("change", measure);
+    };
+  }, [state.embed]);
+  const maxSide = state.embed
+    ? winHeight - (state.controls ? 190 : 50)
+    : wide && stageTop > 0
+      ? Math.max(360, winHeight - stageTop - 24)
+      : undefined;
 
   // Keyboard: space = play/pause, arrows = step
   useEffect(() => {
@@ -117,8 +143,13 @@ export default function App() {
       {!state.embed && <Controls state={state} bands={frames.list?.bands ?? []} onChange={update} />}
 
       <main>
-        <section className="viewer" id="viewer" aria-label="Blink viewer">
-          <div className="stage">
+        <section
+          className="viewer"
+          id="viewer"
+          aria-label="Blink viewer"
+          style={!state.embed && maxSide ? ({ "--side": `${maxSide}px` } as React.CSSProperties) : undefined}
+        >
+          <div className="stage" ref={stageRef}>
             <BlinkCanvas
               frame={current}
               image={ops.image}
