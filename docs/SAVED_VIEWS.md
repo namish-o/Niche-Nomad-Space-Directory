@@ -10,6 +10,12 @@ band, a note and a short description of what is there) and reopen, rename or del
 The site stays fully static: the browser talks to Supabase directly with the public
 "anon" key, and the database rules (row level security) keep users apart.
 
+## Current setup
+
+Already done for the team site: Supabase project `spherex-blink` (Niche Nomads org) has the
+table, and its URL and public anon key are in `frontend/.env.production`, so Vercel needs no
+environment variables. The steps below are for setting up a different Supabase project.
+
 ## Setup, step by step (about 10 minutes)
 
 1. Go to <https://supabase.com>, sign up, and click **New project**. Pick any name,
