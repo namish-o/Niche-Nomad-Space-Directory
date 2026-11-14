@@ -52,5 +52,5 @@ and redeploy. For local development put them in `frontend/.env.local` (git ignor
 - The anon key is meant to be public; the SQL rules are what protect the data.
 - Supabase's built-in email sender allows only a few sign-in emails per hour. That is
   fine for a demo; for more, add your own SMTP under Authentication → Emails.
-- Saves made before signing in stay in the browser; once signed in the panel offers
+- Saves made before signing in stay in the browser (on this device only); once signed in the panel offers
   "Move into my account".
