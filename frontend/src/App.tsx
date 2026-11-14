@@ -10,7 +10,10 @@ import PlayerControls from "./viewer/PlayerControls";
 import { useFrames } from "./viewer/useFrames";
 import { useImageOps } from "./viewer/useImageOps";
 import { usePlayer } from "./viewer/usePlayer";
-import { absoluteUrl, DEFAULT_STATE, useUrlState } from "./state/urlState";
+import { absoluteUrl, DEFAULT_STATE, parseUrl, useUrlState } from "./state/urlState";
+import DescribePanel from "./describe/DescribePanel";
+import { shortLabel, useDescription } from "./describe/useDescription";
+import SavedPanel from "./saved/SavedPanel";
 import { useEmbedBridge } from "./state/embedBridge";
 import { fetchTargets, type Target } from "./api/client";
 import { formatDec, formatFov, formatRa } from "./lib/sky";
@@ -38,6 +41,7 @@ export default function App() {
   const overlays = useOverlays(view);
   const frameMjd = useMemo(() => current?.mjd ?? mjdNow(), [current]);
   const overlayCanvas = useOverlayCanvas(overlays, view, frameMjd);
+  const description = useDescription(state.ra, state.dec, state.fov);
 
   // Frame from the URL: keep the paused player on that exposure while frames
   // are still arriving (new ones can be inserted before it in time order).
@@ -165,6 +169,14 @@ export default function App() {
             <dt>Field</dt>
             <dd>{formatFov(state.fov)} × {formatFov(state.fov)}, north up, east left</dd>
           </dl>
+          <DescribePanel d={description} onCentre={(ra, dec) => update({ ra, dec })} />
+          <SavedPanel
+            state={state}
+            suggestedName={description.curated?.name ?? description.highlight?.name ?? `RA ${formatRa(state.ra)} Dec ${formatDec(state.dec)}`}
+            description={shortLabel(description)}
+            onOpen={(query) => update({ ...parseUrl(query), embed: false, controls: true })}
+          />
+
           <label className="check">
             <input type="checkbox" checked={state.marker} onChange={(e) => update({ marker: e.target.checked })} />
             Mark the target position

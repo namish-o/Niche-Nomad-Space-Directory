@@ -4,5 +4,8 @@
   "buildCommand": "cd frontend && npm run build",
   "outputDirectory": "frontend/dist",
   "framework": null,
-  "rewrites": [{ "source": "/irsa/:path*", "destination": "https://irsa.ipac.caltech.edu/:path*" }]
+  "rewrites": [
+    { "source": "/irsa/:path*", "destination": "https://irsa.ipac.caltech.edu/:path*" },
+    { "source": "/simbad/:path*", "destination": "https://simbad.cds.unistra.fr/:path*" }
+  ]
 }

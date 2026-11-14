@@ -19,8 +19,14 @@ const irsa = {
   },
 };
 
+const simbad = {
+  target: "https://simbad.cds.unistra.fr",
+  changeOrigin: true,
+  rewrite: (path: string) => path.replace(/^\/simbad/, ""),
+};
+
 export default defineConfig({
   plugins: [react()],
-  server: { port: 5173, proxy: { "/irsa": irsa } },
-  preview: { port: 4173, proxy: { "/irsa": irsa } },
+  server: { port: 5173, proxy: { "/irsa": irsa, "/simbad": simbad } },
+  preview: { port: 4173, proxy: { "/irsa": irsa, "/simbad": simbad } },
 });

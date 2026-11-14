@@ -13,7 +13,14 @@ services:
         value: "20"
       - key: VITE_SENTRY_DSN   # optional browser error reporting, leave blank to skip
         sync: false
+      - key: VITE_SUPABASE_URL   # optional sign-in + saved views, see docs/SAVED_VIEWS.md
+        sync: false
+      - key: VITE_SUPABASE_ANON_KEY
+        sync: false
     routes:
       - type: rewrite
         source: /irsa/*
         destination: https://irsa.ipac.caltech.edu/*
+      - type: rewrite
+        source: /simbad/*
+        destination: https://simbad.cds.unistra.fr/*

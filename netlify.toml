@@ -13,3 +13,10 @@
   to = "https://irsa.ipac.caltech.edu/:splat"
   status = 200
   force = true
+
+# SIMBAD (object descriptions) is forwarded the same way.
+[[redirects]]
+  from = "/simbad/*"
+  to = "https://simbad.cds.unistra.fr/:splat"
+  status = 200
+  force = true

@@ -1,0 +1,7 @@
+.describe p { font-size: 14px; line-height: 1.5; margin: 6px 0; }
+.describe-card { border-left: 3px solid var(--accent); padding-left: 10px; }
+.describe-title { margin-bottom: 2px; }
+.describe-tip { color: var(--muted); }
+.describe-list { list-style: none; padding: 0; margin: 6px 0; font-size: 13px; }
+.describe-list li { margin: 3px 0; }
+.describe details summary { cursor: pointer; font-size: 13px; color: var(--muted); }
