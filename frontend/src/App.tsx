@@ -101,7 +101,7 @@ export default function App() {
               <circle cx="26.5" cy="11" r="1.8" className="logo-mover" />
             </svg>
             <div>
-              <h1>SPHEREx Blink</h1>
+              <h1><a className="home-link" href={window.location.pathname}>SPHEREx Blink</a></h1>
               <p className="tagline">A Planet X hunter for NASA Space Apps 2026</p>
             </div>
           </div>
@@ -110,6 +110,7 @@ export default function App() {
             Anything that moves between frames could be a nearby object.{" "}
             <a href="#glossary" onClick={() => document.getElementById("glossary")?.setAttribute("open", "")}>New to astronomy? See the words explained</a>
           </p>
+          <a className="new-search" href={window.location.pathname}>New search</a>
         </header>
       )}
 
