@@ -7,6 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 import { fetchTargets, resolveQuery, type Target } from "../api/client";
 import { eclipticToEquatorial, formatDec, formatRa, galacticToEquatorial } from "../lib/sky";
 import "./home.css";
+import AccountButton from "../saved/AccountButton";
 
 interface Props {
   onGo: (pos: { ra: number; dec: number; band?: number }) => void;
@@ -83,6 +84,7 @@ export default function Home({ onGo }: Props) {
         </span>
         <span className="home-bar-note">Our entry for NASA Space Apps 2026 (Planet X and SPHEREx)</span>
         <Tour steps={HOME_STEPS} part="home" />
+        <AccountButton />
       </header>
 
       <main className="home-main">

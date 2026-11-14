@@ -14,6 +14,7 @@ import { absoluteUrl, DEFAULT_STATE, parseUrl, useUrlState } from "./state/urlSt
 import DescribePanel from "./describe/DescribePanel";
 import { shortLabel, useDescription } from "./describe/useDescription";
 import SavedPanel from "./saved/SavedPanel";
+import AccountButton from "./saved/AccountButton";
 import { useEmbedBridge } from "./state/embedBridge";
 import { fetchTargets, type Target } from "./api/client";
 import { formatDec, formatFov, formatRa } from "./lib/sky";
@@ -141,6 +142,7 @@ export default function App() {
           </p>
           <Tour steps={VIEWER_STEPS} part="viewer" />
           <a className="new-search" href={window.location.pathname}>New search</a>
+          <AccountButton savedPanelId="saved-views" />
         </header>
       )}
 

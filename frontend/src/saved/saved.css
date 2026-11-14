@@ -24,3 +24,23 @@ button.saved-open {
 .saved-desc { color: var(--muted); }
 .saved-note { white-space: pre-wrap; }
 .saved-actions { display: flex; gap: 12px; font-size: 12.5px; margin-top: 4px; }
+.account { position: relative; flex: none; margin-left: auto; }
+button.account-btn {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 0;
+  padding: var(--space-xs, 4px) var(--space-md, 12px); font-size: var(--text-sm, 14px); font-weight: 500;
+}
+.account-label { max-width: 14ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.account-dot {
+  display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%;
+  background: var(--color-accent, var(--accent)); color: var(--color-paper, #000); font-size: 11px; font-weight: 700;
+}
+.account-menu {
+  position: absolute; right: 0; top: calc(100% + 8px); z-index: 900; width: min(300px, calc(100vw - 32px));
+  display: flex; flex-direction: column; gap: 8px; padding: 14px;
+  background: var(--color-paper-2, var(--panel-solid)); border: 1px solid var(--color-rule-2, var(--line-strong));
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+.account-menu form { display: flex; flex-direction: column; gap: 8px; }
+.account-menu .hint { margin: 0; }
+.account-email { margin: 0; font-size: 13px; overflow-wrap: anywhere; }
+.account-menu button.link { align-self: flex-start; }

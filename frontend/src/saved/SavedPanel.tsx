@@ -79,7 +79,7 @@ export default function SavedPanel({ state, suggestedName, description, onOpen }
     });
 
   return (
-    <section className="saved" aria-label="My saved views">
+    <section className="saved" id="saved-views" aria-label="My saved views">
       <h2>My saved views</h2>
       {cloudConfigured ? <Account auth={auth} /> : <p className="hint">Saves are kept in this browser.</p>}
 
