@@ -31,6 +31,8 @@ GitHub Pages cannot forward requests. To use it anyway, deploy
 `VITE_IRSA_BASE=https://<your-worker>.workers.dev`. More in
 [docs/DEPLOY.md](docs/DEPLOY.md).
 
+Sign-in and saved views use Supabase; see [docs/SAVED_VIEWS.md](docs/SAVED_VIEWS.md).
+
 ## Work on the code
 
 Needs [Node.js 18+](https://nodejs.org).
