@@ -1,12 +1,14 @@
 // Hand-written descriptions for the five challenge targets. They win over the
 // automatic SIMBAD text whenever the view is centred close to one of them.
 import { TARGETS } from "../data/targets";
+import type { TermKey } from "../glossary/terms";
 import { angularSeparationDeg } from "./simbad";
 
 export interface Curated {
   id: string;
   name: string;
   kind: string;
+  term: TermKey; // glossary entry for the kind of object
   distance: string;
   text: string;
   lookFor: string;
@@ -14,6 +16,7 @@ export interface Curated {
 
 const CURATED: Record<string, Omit<Curated, "id" | "name">> = {
   wise0855: {
+    term: "brownDwarf",
     kind: "Brown dwarf (Y dwarf)",
     distance: "7.4 light-years",
     text:
@@ -25,6 +28,7 @@ const CURATED: Record<string, Omit<Curated, "id" | "name">> = {
       "marker. Blink the frames or use 'difference' mode and look for a faint dot that is brighter at long wavelengths.",
   },
   barnard: {
+    term: "redDwarf",
     kind: "Red dwarf star",
     distance: "6 light-years",
     text:
@@ -35,6 +39,7 @@ const CURATED: Record<string, Omit<Curated, "id" | "name">> = {
       "in the infrared, so it saturates and appears as a large blob.",
   },
   epsindb: {
+    term: "brownDwarf",
     kind: "Pair of brown dwarfs orbiting a star",
     distance: "12 light-years",
     text:
@@ -45,6 +50,7 @@ const CURATED: Record<string, Omit<Curated, "id" | "name">> = {
       "the bright star Epsilon Indi A is about 7 arcminutes away.",
   },
   rwaur: {
+    term: "variable",
     kind: "Young variable star (T Tauri type)",
     distance: "about 500 light-years",
     text:
@@ -54,6 +60,7 @@ const CURATED: Record<string, Omit<Curated, "id" | "name">> = {
       "It does not move, but its brightness changes from frame to frame. Compare its brightness with nearby stars as you blink.",
   },
   rdra: {
+    term: "mira",
     kind: "Mira variable (pulsating red giant)",
     distance: "about 2,000 light-years",
     text:

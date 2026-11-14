@@ -1,5 +1,6 @@
 // "What's here?": a plain-language description of the centre of the view.
 import "./describe.css";
+import Info from "../glossary/Info";
 import { formatSep, plainType } from "./simbad";
 import type { Description } from "./useDescription";
 
@@ -11,7 +12,7 @@ export default function DescribePanel({ d, onCentre }: { d: Description; onCentr
         <div className="describe-card">
           <p className="describe-title">
             <strong>{d.curated.name}</strong>
-            <span className="muted"> · {d.curated.kind} · {d.curated.distance}</span>
+            <span className="muted"> · {d.curated.kind}<Info term={d.curated.term} /> · {d.curated.distance}<Info term="lightYear" /></span>
           </p>
           <p>{d.curated.text}</p>
           <p className="describe-tip"><strong>What to look for:</strong> {d.curated.lookFor}</p>

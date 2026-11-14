@@ -19,6 +19,8 @@ import { fetchTargets, type Target } from "./api/client";
 import { formatDec, formatFov, formatRa } from "./lib/sky";
 import DataPanel from "./data/DataPanel";
 import { AladinPanel, OverlayPanel, SourceCard, mjdNow, useOverlayCanvas, useOverlays } from "./overlays";
+import Info from "./glossary/Info";
+import GlossaryPanel from "./glossary/GlossaryPanel";
 
 const IMAGE_SIZE = 384; // pixels requested from the backend per frame
 
@@ -104,8 +106,9 @@ export default function App() {
             </div>
           </div>
           <p className="intro">
-            Flip through NASA SPHEREx infrared images of one patch of sky over time. Stars stay put.
-            Anything that moves between frames could be a nearby object.
+            Flip through NASA SPHEREx<Info term="spherex" /> infrared<Info term="infrared" /> images of one patch of sky over time<Info term="blink" />. Stars stay put.
+            Anything that moves between frames could be a nearby object.{" "}
+            <a href="#glossary" onClick={() => document.getElementById("glossary")?.setAttribute("open", "")}>New to astronomy? Words explained ↓</a>
           </p>
         </header>
       )}
@@ -162,11 +165,11 @@ export default function App() {
         <aside>
           <h2>This view</h2>
           <dl>
-            <dt>RA</dt>
+            <dt>RA<Info term="ra" /></dt>
             <dd>{formatRa(state.ra)} <span className="muted">({state.ra.toFixed(5)}°)</span></dd>
-            <dt>Dec</dt>
+            <dt>Dec<Info term="dec" /></dt>
             <dd>{formatDec(state.dec)} <span className="muted">({state.dec.toFixed(5)}°)</span></dd>
-            <dt>Field</dt>
+            <dt>Field<Info term="fov" /></dt>
             <dd>{formatFov(state.fov)} × {formatFov(state.fov)}, north up, east left</dd>
           </dl>
           <DescribePanel d={description} onCentre={(ra, dec) => update({ ra, dec })} />
@@ -187,14 +190,14 @@ export default function App() {
           </label>
           <OverlayPanel overlays={overlays} />
 
-          <h2>Move around the sky</h2>
+          <h2>Move around the sky<Info term="arcmin" /></h2>
           <SkyNavigator ra={state.ra} dec={state.dec} fov={state.fov} targets={targets} onJump={(ra, dec) => update({ ra, dec })} />
           <p className="hint">
             Scroll or pinch to zoom, drag to pan (Shift+arrows or WASD on a keyboard, + and − to zoom, 0 to
             fit). Double-click re-centres. Space plays or pauses, arrow keys step one frame.
           </p>
 
-          <h2>Add / subtract images</h2>
+          <h2>Add / subtract images<Info term="difference" /></h2>
           <ImageOpsPanel state={state} frames={frames.frames} current={current} label={ops.label} onChange={update} />
 
           <DataPanel view={view} band={state.band} frame={current} playing={player.playing} />
@@ -203,6 +206,8 @@ export default function App() {
             Each SPHEREx exposure sees a slightly different wavelength at this spot, so brightness can
             change from frame to frame even for ordinary stars.
           </p>
+
+          <GlossaryPanel />
 
           <h2>Share</h2>
           <EmbedPanel state={state} />

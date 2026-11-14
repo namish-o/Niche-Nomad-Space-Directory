@@ -5,6 +5,7 @@ import type { LoadedFrame, View } from "../api/client";
 import { fetchCoadd, fetchFrameMeta, fetchSpectrum, type CoaddResult, type FrameMeta, type Spectrum } from "./api";
 import SpectrumChart from "./SpectrumChart";
 import "./data.css";
+import Info from "../glossary/Info";
 
 interface Props {
   view: View;
@@ -42,19 +43,19 @@ function FrameDetails({ view, frame, playing }: { view: View; frame: LoadedFrame
   return (
     <div className="frame-details">
       <dl>
-        <dt>Wavelength</dt>
+        <dt>Wavelength<Info term="micron" /></dt>
         <dd>
           {meta.wavelength?.toFixed(3) ?? "?"} µm
           {meta.bandwidth ? <span className="muted"> (± {(meta.bandwidth / 2).toFixed(3)})</span> : null}
         </dd>
-        <dt>Channel</dt>
+        <dt>Channel<Info term="channel" /></dt>
         <dd>
           {meta.channel_index !== null ? `${meta.channel_index + 1} of 102` : "outside nominal bands"}
           {meta.channel ? <span className="muted"> (D{meta.frame.detector}, {meta.channel} of 17)</span> : null}
         </dd>
-        <dt>Exposure</dt>
+        <dt>Exposure<Info term="exposure" /></dt>
         <dd>{meta.header.exposure_s?.toFixed(0) ?? "?"} s <span className="muted">{meta.frame.obs_id}</span></dd>
-        <dt>Checks</dt>
+        <dt>Checks<Info term="flags" /></dt>
         <dd>
           Quality {meta.header.l1_quality ?? "?"}, astrometry {meta.header.fine_astrometry_ok === false ? "coarse only" : "good"}
         </dd>
@@ -200,9 +201,9 @@ export default function DataPanel({ view, band, frame, playing }: Props) {
     <div className="data-panel">
       <h2>This frame</h2>
       <FrameDetails view={view} frame={frame} playing={playing} />
-      <h2>Deep image (co-add)</h2>
+      <h2>Deep image (co-add)<Info term="coadd" /></h2>
       <CoaddSection view={view} band={band} />
-      <h2>Spectrum</h2>
+      <h2>Spectrum<Info term="spectrum" /></h2>
       <SpectrumSection view={view} />
     </div>
   );

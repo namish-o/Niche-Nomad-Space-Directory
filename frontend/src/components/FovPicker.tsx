@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { FOV_CHOICES, FOV_MAX, FOV_MIN } from "../state/urlState";
 import { formatFov } from "../lib/sky";
+import Info from "../glossary/Info";
 
 interface Props {
   value: number; // arcmin
@@ -37,7 +38,7 @@ export default function FovPicker({ value, onChange }: Props) {
 
   return (
     <fieldset className="fov-picker">
-      <legend>Field of view</legend>
+      <legend>Field of view<Info term="fov" /></legend>
       <div className="fov-row">
         <input
           type="range"

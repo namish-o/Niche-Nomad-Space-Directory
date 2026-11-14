@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { fetchTargets, resolveQuery, type BandInfo, type Target } from "../api/client";
 import { type ViewState } from "../state/urlState";
 import FovPicker from "./FovPicker";
+import Info from "../glossary/Info";
 
 interface Props {
   state: ViewState;
@@ -38,7 +39,7 @@ export default function Controls({ state, bands, onChange }: Props) {
   return (
     <div className="controls">
       <form onSubmit={submit} className="search">
-        <label htmlFor="coords">RA / Dec</label>
+        <label htmlFor="coords">RA / Dec</label><Info term="coordinates" />
         <input
           id="coords"
           value={query}
@@ -66,7 +67,7 @@ export default function Controls({ state, bands, onChange }: Props) {
       </label>
 
       <label>
-        Band
+        <span>Band<Info term="band" /></span>
         <select value={state.band} onChange={(e) => onChange({ band: Number(e.target.value) })}>
           {[1, 2, 3, 4, 5, 6].map((d) => {
             const b = bands.find((x) => x.detector === d);

@@ -4,6 +4,7 @@ import type { CatalogResult } from "./api";
 import { LAYER_STYLE } from "./draw";
 import { mjdToYear, positionAt, skyToOffset, totalPm } from "./motion";
 import type { Selection } from "./useOverlays";
+import Info from "../glossary/Info";
 
 interface Props {
   selection: Selection;
@@ -39,7 +40,7 @@ export default function SourceCard({ selection, layer, mjd, onClose, onCentre }:
         <dd>{formatRa(now.ra)}<br />{formatDec(now.dec)}</dd>
         {s.mag !== null && (
           <>
-            <dt>Brightness</dt>
+            <dt>Brightness<Info term="magnitude" /></dt>
             <dd>
               {layer?.mag_label} {s.mag.toFixed(2)}
               {s.w1 != null && <span className="muted"> · W1 {s.w1.toFixed(2)}</span>}
@@ -48,7 +49,7 @@ export default function SourceCard({ selection, layer, mjd, onClose, onCentre }:
         )}
         {hasPm && (
           <>
-            <dt>Motion</dt>
+            <dt>Motion<Info term="properMotion" /></dt>
             <dd>
               {pm >= 1000 ? `${(pm / 1000).toFixed(2)}″` : `${pm.toFixed(1)} mas`} per year
               {s.pm_err != null && <span className="muted"> ± {s.pm_err.toFixed(0)} mas</span>}

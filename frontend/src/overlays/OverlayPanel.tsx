@@ -2,6 +2,7 @@
 import type { LayerKey } from "./api";
 import { LAYER_STYLE } from "./draw";
 import { LAYER_KEYS, type OverlaysState } from "./useOverlays";
+import Info from "../glossary/Info";
 
 const HELP: Record<LayerKey, string> = {
   gaia: "Optical stars with precise motions (ESA Gaia, 3rd release).",
@@ -13,7 +14,7 @@ export default function OverlayPanel({ overlays }: { overlays: OverlaysState }) 
   const { enabled, setEnabled, status, results, followMotion, setFollowMotion } = overlays;
   return (
     <div className="overlay-panel">
-      <h2>Catalogue overlays</h2>
+      <h2>Catalogue overlays<Info term="catalogue" /></h2>
       {LAYER_KEYS.map((key) => {
         const st = status[key];
         const r = results[key];
@@ -29,6 +30,7 @@ export default function OverlayPanel({ overlays }: { overlays: OverlaysState }) 
               <input type="checkbox" checked={enabled[key]} onChange={(e) => setEnabled(key, e.target.checked)} />
               <span className={`ov-swatch ov-swatch-${key}`} style={{ borderColor: LAYER_STYLE[key].color }} />
               {LAYER_STYLE[key].label}
+              <Info term={key} />
               {detail && <span className="muted overlay-count">{detail}</span>}
             </label>
             {enabled[key] && st?.error && (
