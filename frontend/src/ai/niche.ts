@@ -10,7 +10,7 @@ export interface NicheStatus {
   /** Bytes so far and in total while downloading (0 when cached or unknown). */
   loaded: number;
   total: number;
-  device: "webgpu" | "wasm" | null;
+  device: "server" | "webgpu" | "wasm" | null;
   error: string | null;
 }
 
@@ -71,8 +71,24 @@ export function answerNicheDownload(yes: boolean) {
   consent = null;
 }
 
-/** Start the download (or the load from cache). Safe to call many times. */
+// The team's own computer can answer instead (api/niche.ts). Checked once per
+// page; if it's up, nobody has to download anything.
+const SERVER = "/api/niche";
+let useServer: Promise<boolean> | null = null;
+function serverUp(): Promise<boolean> {
+  useServer ??= fetch(SERVER, { signal: AbortSignal.timeout(5000) })
+    .then(async (r) => r.ok && (r.headers.get("content-type") ?? "").includes("json") && (await r.json()).ready === true)
+    .catch(() => false);
+  return useServer;
+}
+
+/** Get Niche ready: the server if it's up, otherwise the in-browser model. Safe to call many times. */
 export async function loadNiche(): Promise<void> {
+  if (ready) return ready;
+  if (status.phase !== "ask" && (await serverUp())) {
+    set({ phase: "ready", device: "server", error: null });
+    return;
+  }
   if (ready) return ready;
   if (!hasOk()) {
     // No popup on this page (the embed view): don't wait for an answer that can't come.
@@ -131,8 +147,26 @@ let queue: Promise<unknown> = Promise.resolve();
 
 /** Ask the model. Loads it first if needed. One question at a time. */
 export function askNiche(messages: Msg[], maxTokens: number, onText?: (t: string) => void): Promise<string> {
-  const run = async () => {
+  const run = async (): Promise<string> => {
     await loadNiche();
+    if (status.device === "server") {
+      const r = await fetch(SERVER, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages, maxTokens }),
+      }).catch(() => null);
+      const body = r ? ((await r.json().catch(() => ({}))) as { text?: string; error?: string }) : {};
+      if (r?.ok && typeof body.text === "string") {
+        onText?.(body.text);
+        return body.text;
+      }
+      // Rate limit or a bad question: the server is fine, so say why.
+      if (r && (r.status === 429 || r.status === 400)) throw new Error(body.error ?? "Niche couldn't answer that one.");
+      // Server went away: switch to the in-browser model for the rest of the visit.
+      useServer = Promise.resolve(false);
+      set({ phase: "idle", device: null });
+      return run();
+    }
     const id = nextId++;
     return new Promise<string>((resolve, reject) => {
       pending.set(id, { resolve, reject, onText });

@@ -18,7 +18,9 @@ Niche (the chat helper, plain-English search and mover notes) needs no key or
 server. It is a small model (Qwen3 0.6B) that each visitor's browser downloads
 from Hugging Face the first time they open Niche or search in plain English,
 and then keeps in its cache. It is fastest with WebGPU (recent Chrome or Edge);
-other browsers fall back to the slower CPU version.
+other browsers fall back to the slower CPU version. Optionally, Niche can run
+from one of our own computers instead (no download for visitors); see
+[NICHE_SERVER.md](NICHE_SERVER.md).
 
 ## Render, step by step
 

@@ -258,7 +258,8 @@ export default function NicheChat({ context }: { context: () => unknown }) {
             <button type="submit" disabled={busy || !text.trim()}>Ask</button>
           </form>
           <p className="niche-foot">
-            Runs on your device{model.device === "wasm" ? " (no GPU found, so it's slower)" : ""}. Small model, answers can be wrong.
+            {model.device === "server" ? "Runs on our team's own computer" : "Runs on your device"}
+            {model.device === "wasm" ? " (no GPU found, so it's slower)" : ""}. Small model, answers can be wrong.
           </p>
         </div>
       )}

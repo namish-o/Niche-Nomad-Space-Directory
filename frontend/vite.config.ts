@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 
 // The site is fully static. IRSA does not allow direct browser calls (no CORS
@@ -25,10 +25,40 @@ const simbad = {
   rewrite: (path: string) => path.replace(/^\/simbad/, ""),
 };
 
-export default defineConfig({
-  plugins: [react()],
+// /api/niche is a Vercel function in production (api/niche.ts). Serve the same
+// code locally so the home-server option can be tried: put
+// NICHE_SERVER_URL=http://localhost:11434 in frontend/.env.local.
+function nicheApi(): Plugin {
+  const mount = (server: { middlewares: import("vite").Connect.Server }) => {
+    server.middlewares.use("/api/niche", async (req, res) => {
+      let raw = "";
+      for await (const chunk of req) raw += chunk;
+      const { default: handler } = await import("../api/niche");
+      const out = {
+        status(code: number) {
+          res.statusCode = code;
+          return out;
+        },
+        setHeader: (k: string, v: string) => res.setHeader(k, v),
+        json(body: unknown) {
+          res.setHeader("Content-Type", "application/json");
+          res.end(JSON.stringify(body));
+        },
+      };
+      await handler({ method: req.method, body: raw, headers: req.headers, socket: req.socket }, out);
+    });
+  };
+  return { name: "niche-api", configureServer: mount, configurePreviewServer: mount };
+}
+
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), "NICHE_");
+  for (const k in env) process.env[k] ??= env[k];
+  return {
+  plugins: [react(), nicheApi()],
   // The Niche model runs in a module worker that imports transformers.js.
   worker: { format: "es" },
   server: { port: 5173, proxy: { "/irsa": irsa, "/simbad": simbad } },
   preview: { port: 4173, proxy: { "/irsa": irsa, "/simbad": simbad } },
+  };
 });
