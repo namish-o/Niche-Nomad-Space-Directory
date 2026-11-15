@@ -1,3 +1,4 @@
+// Build config for the static site (redeploy after the Vercel limit reset).
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
