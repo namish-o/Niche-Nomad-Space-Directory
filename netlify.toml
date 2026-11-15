@@ -2,7 +2,7 @@
 # by Netlify itself (a rewrite, no server code). Nothing else to configure.
 [build]
   base = "frontend"
-  command = "npm run build"
+  command = "npm --prefix .. ci && npm run build"
   publish = "dist"
 
 [build.environment]
