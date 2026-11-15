@@ -4,7 +4,10 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { CATEGORIES, OBJECTS, position, scaleLy, type Category, type MapObject } from "./objects";
+import { CATEGORIES, HELIO_R, OBJECTS, PLANET_ORBITS, UPWIND_DIR, UPWIND_H_DIR, eclipticPoint, position, scaleLy, type Category, type MapObject } from "./objects";
+import { SpectrumSection } from "../data/DataPanel";
+import SolarWind from "./SolarWind";
+import "../data/data.css";
 import "./space3d.css";
 
 const RINGS = [10, 100, 1000];
@@ -35,7 +38,7 @@ function glowTexture(): THREE.Texture {
 
 const fmtLy = (ly: number) => `${ly < 20 ? ly.toFixed(1) : Math.round(ly).toLocaleString()} light-years`;
 
-interface Api { flyTo(o: MapObject | null): void; show(c: Category, on: boolean): void }
+interface Api { flyTo(o: MapObject | null): void; show(c: Category, on: boolean): void; rings(on: boolean): void }
 
 interface Props {
   /** Compact version that sits inside the homepage instead of filling the window. */
@@ -49,7 +52,8 @@ export default function Space3D({ embedded = false, onOpen }: Props) {
   const labels = useRef<Record<string, HTMLElement | null>>({});
   const api = useRef<Api | null>(null);
   const [selected, setSelected] = useState<MapObject | null>(null);
-  const [shown, setShown] = useState<Record<Category, boolean>>({ movers: true, variables: true, landmarks: true });
+  const [solar, setSolar] = useState(false);
+  const [shown, setShown] = useState<Record<Category, boolean>>({ movers: true, variables: true, landmarks: true, imap: true, solar: true });
 
   useEffect(() => {
     const el = mount.current!;
@@ -99,12 +103,15 @@ export default function Space3D({ embedded = false, onOpen }: Props) {
 
     // Distance rings in the plane of Earth's equator.
     const ringMat = keep(new THREE.LineBasicMaterial({ color: cssColor("--color-rule-2"), transparent: true, opacity: 0.7 }));
+    const rings: THREE.Object3D[] = [];
     for (const ly of RINGS) {
       const pts = Array.from({ length: 129 }, (_, i) => {
         const a = (i / 128) * Math.PI * 2;
         return new THREE.Vector3(Math.cos(a) * scaleLy(ly), 0, Math.sin(a) * scaleLy(ly));
       });
-      scene.add(new THREE.LineLoop(keep(new THREE.BufferGeometry().setFromPoints(pts)), ringMat));
+      const ring = new THREE.LineLoop(keep(new THREE.BufferGeometry().setFromPoints(pts)), ringMat);
+      rings.push(ring);
+      scene.add(ring);
     }
 
     // One group per category so filters are a single visibility switch.
@@ -137,10 +144,46 @@ export default function Space3D({ embedded = false, onOpen }: Props) {
         halo.scale.setScalar(0.75);
         // A stem down to the equator plane shows how far north or south it is.
         const stem = new THREE.Line(keep(new THREE.BufferGeometry().setFromPoints([p, new THREE.Vector3(p.x, 0, p.z)])), stemMat);
-        g.add(m, halo, stem);
+        if (c.id === "solar") g.add(m, halo); // planets already sit on their orbit plane
+        else g.add(m, halo, stem);
       }
       groups[c.id] = g;
       scene.add(g);
+    }
+
+    // IMAP layer: the heliosphere (enlarged, nose into the wind, long tail
+    // behind) and an arrow showing the interstellar wind flowing in.
+    {
+      const up = new THREE.Vector3(...UPWIND_DIR);
+      const color = cssColor("--color-sky-mw");
+      const geo = keep(new THREE.SphereGeometry(HELIO_R, 40, 24));
+      const pos = geo.attributes.position as THREE.BufferAttribute;
+      const v3 = new THREE.Vector3();
+      for (let i = 0; i < pos.count; i++) {
+        v3.fromBufferAttribute(pos, i);
+        const d = v3.clone().normalize().dot(up);
+        if (d < 0) v3.addScaledVector(up, d * HELIO_R * 1.6); // stretch the downwind side into a tail
+        pos.setXYZ(i, v3.x, v3.y, v3.z);
+      }
+      const shell = new THREE.Mesh(geo, keep(new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.07, depthWrite: false, side: THREE.DoubleSide })));
+      const wire = new THREE.Mesh(geo, keep(new THREE.MeshBasicMaterial({ color, wireframe: true, transparent: true, opacity: 0.14 })));
+      const arrow = new THREE.ArrowHelper(up.clone().negate(), up.clone().multiplyScalar(4.2), 2.7, color.getHex(), 0.4, 0.22);
+      const hUp = new THREE.Vector3(...UPWIND_H_DIR);
+      const hArrow = new THREE.ArrowHelper(hUp.clone().negate(), hUp.clone().multiplyScalar(4.2), 2.7, color.getHex(), 0.3, 0.16);
+      (hArrow.line.material as THREE.LineBasicMaterial).transparent = true;
+      (hArrow.line.material as THREE.LineBasicMaterial).opacity = 0.4;
+      groups.imap.add(shell, wire, arrow, hArrow);
+      disposables.push(hArrow);
+      disposables.push(arrow);
+    }
+
+    // Planet orbits for the solar system view, in the plane of Earth's orbit.
+    {
+      const mat = keep(new THREE.LineBasicMaterial({ color: cssColor("--color-sky-ecliptic"), transparent: true, opacity: 0.35 }));
+      for (const r of PLANET_ORBITS) {
+        const pts = Array.from({ length: 129 }, (_, i) => new THREE.Vector3(...eclipticPoint((i / 128) * 360, r)));
+        groups.solar.add(new THREE.LineLoop(keep(new THREE.BufferGeometry().setFromPoints(pts)), mat));
+      }
     }
 
     // Camera flights between objects.
@@ -155,6 +198,7 @@ export default function Space3D({ embedded = false, onOpen }: Props) {
         flight = { p0: camera.position.clone(), p1: cam, t0v: controls.target.clone(), t1v: target, start: performance.now(), dur: still ? 1 : 1400 };
       },
       show(c, on) { groups[c].visible = on; },
+      rings(on) { rings.forEach((r) => { r.visible = on; }); },
     };
 
     // Click (not drag) on a star selects it.
@@ -221,18 +265,27 @@ export default function Space3D({ embedded = false, onOpen }: Props) {
   }, []);
 
   const pick = (o: MapObject | null) => { setSelected(o); api.current?.flyTo(o); };
+  // Star map and solar system are two views of one scene.
+  const isOn = (c: Category) => (solar ? c === "solar" : c !== "solar" && shown[c]);
+  useEffect(() => {
+    CATEGORIES.forEach((c) => api.current?.show(c.id, isOn(c.id)));
+    api.current?.rings(!solar);
+  }, [solar, shown]);
   const toggle = (c: Category) => {
     const on = !shown[c];
     setShown({ ...shown, [c]: on });
-    api.current?.show(c, on);
     if (!on && selected?.category === c) pick(null);
+  };
+  const switchView = () => {
+    setSolar(!solar);
+    pick(null);
   };
   const viewerHref = (o: MapObject) => {
     const p = new URLSearchParams({ ra: o.ra.toFixed(6), dec: o.dec.toFixed(6) });
     if (o.band) p.set("band", String(o.band));
     return `${window.location.pathname}?${p}`;
   };
-  const visible = OBJECTS.filter((o) => shown[o.category]);
+  const visible = OBJECTS.filter((o) => isOn(o.category));
 
   return (
     <div className={embedded ? "s3d is-embedded" : "s3d"}>
@@ -240,14 +293,14 @@ export default function Space3D({ embedded = false, onOpen }: Props) {
         <div className="s3d-labels" aria-hidden="true">
           <span className="s3d-label s3d-sun" ref={(n) => { labels.current.sun = n; }}>Sun</span>
           {RINGS.map((ly) => (
-            <span key={ly} className="s3d-label s3d-ring" ref={(n) => { labels.current[`ring${ly}`] = n; }}>{ly.toLocaleString()} ly</span>
+            <span key={ly} hidden={solar} className="s3d-label s3d-ring" ref={(n) => { labels.current[`ring${ly}`] = n; }}>{ly.toLocaleString()} ly</span>
           ))}
           {OBJECTS.map((o) => (
             <span
               key={o.id}
               ref={(n) => { labels.current[o.id] = n; }}
               className={`s3d-label s3d-hit s3d-cat-${o.category}${selected?.id === o.id ? " is-on" : ""}`}
-              hidden={!shown[o.category]}
+              hidden={!isOn(o.category)}
               onClick={() => pick(o)}
             >
               {o.name}
@@ -263,11 +316,14 @@ export default function Space3D({ embedded = false, onOpen }: Props) {
           <>
             <a className="s3d-back" href={window.location.pathname}>← Niche Space Directory</a>
             <h1>Niche in 3D</h1>
-            <p>Drag to turn, scroll or pinch to zoom. Distances are squashed so near and far both fit.</p>
+            <p>{solar ? "Planets where they are today. Orbits are squashed so Mercury and Neptune both fit." : "Drag to turn, scroll or pinch to zoom. Distances are squashed so near and far both fit."}</p>
           </>
         )}
         <div className="s3d-filters" role="group" aria-label="Show categories">
-          {CATEGORIES.map((c) => (
+          <button type="button" className="s3d-chip s3d-switch" aria-pressed={solar} onClick={switchView}>
+            {solar ? "Back to the stars" : "Our solar system"}
+          </button>
+          {!solar && CATEGORIES.filter((c) => c.id !== "solar").map((c) => (
             <button key={c.id} type="button" className={`s3d-chip s3d-cat-${c.id}`} aria-pressed={shown[c.id]} onClick={() => toggle(c.id)}>
               <i /> {c.label}
             </button>
@@ -280,9 +336,21 @@ export default function Space3D({ embedded = false, onOpen }: Props) {
           <div className="s3d-card">
             <p className={`s3d-kind s3d-cat-${selected.category}`}><i /> {selected.kind}</p>
             <h2>{selected.name}</h2>
-            <p className="s3d-dist">{fmtLy(selected.ly)} from the Sun</p>
+            <p className="s3d-dist">{selected.distText ?? `${fmtLy(selected.ly)} from the Sun`}</p>
             <p className="s3d-note">{selected.note}</p>
+            {(selected.category === "imap" || selected.id === "imapcraft") && <SolarWind />}
+            {!selected.noViewer && selected.category !== "imap" && (
+              <div className="s3d-spectrum">
+                <SpectrumSection
+                  key={selected.id}
+                  view={selected}
+                  label="Show its SPHEREx spectrum"
+                  hint="Measures this star in every SPHEREx exposure, 0.75 to 5 microns, and plots brightness against wavelength. Takes about a minute."
+                />
+              </div>
+            )}
             <div className="s3d-actions">
+              {!selected.noViewer && (
               <a
                 className="primary"
                 href={viewerHref(selected)}
@@ -290,17 +358,18 @@ export default function Space3D({ embedded = false, onOpen }: Props) {
               >
                 Open in sky viewer
               </a>
+              )}
               <button type="button" onClick={() => pick(null)}>Back to the Sun</button>
             </div>
           </div>
         ) : (
-          <p className="s3d-hint">{embedded ? "Drag to turn, pinch or scroll to zoom, tap a star to fly there." : "Pick a star on the map or from the list to fly there."}</p>
+          <p className="s3d-hint">{embedded ? "Drag to turn, pinch or scroll to zoom, tap a star to fly there." : `Pick a ${solar ? "planet" : "star"} on the map or from the list to fly there.`}</p>
         )}
         {!embedded && <ul className="s3d-list" aria-label="Objects">
           {visible.map((o) => (
             <li key={o.id}>
               <button type="button" className={`s3d-cat-${o.category}`} aria-current={selected?.id === o.id} onClick={() => pick(o)}>
-                <i /> {o.name} <span>{fmtLy(o.ly).replace(" light-years", " ly")}</span>
+                <i /> {o.name} <span>{o.category === "solar" ? o.distText?.split(" from")[0] : o.distText ? "IMAP" : fmtLy(o.ly).replace(" light-years", " ly")}</span>
               </button>
             </li>
           ))}

@@ -1,9 +1,10 @@
 // "Words explained": every definition in one list, with a search box.
 import { useState } from "react";
-import { TERMS } from "./terms";
+import { TERMS, type Term } from "./terms";
+import { MoreLink } from "./Info";
 import "./glossary.css";
 
-const ALL = Object.values(TERMS).sort((a, b) => a.word.localeCompare(b.word));
+const ALL: Term[] = Object.values(TERMS).sort((a, b) => a.word.localeCompare(b.word));
 
 export default function GlossaryPanel() {
   const [q, setQ] = useState("");
@@ -20,7 +21,10 @@ export default function GlossaryPanel() {
         {shown.map((t) => (
           <div key={t.word}>
             <dt>{t.word}</dt>
-            <dd>{t.text}</dd>
+            <dd>
+              {t.text}
+              <MoreLink term={t} />
+            </dd>
           </div>
         ))}
       </dl>

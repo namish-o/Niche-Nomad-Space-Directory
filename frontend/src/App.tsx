@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import SourcesButton from "./sources/SourcesButton";
 import Controls from "./components/Controls";
 import EmbedPanel from "./components/EmbedPanel";
 import ImageOpsPanel from "./components/ImageOpsPanel";
@@ -332,6 +333,7 @@ export default function App() {
           </a>
           . Built for the NASA Space Apps Challenge: Planet X and SPHEREx.
           <p className="team-credit">Niche Nomads: Anish M., Namish O., Jayanth J., Arnav B.</p>
+          <SourcesButton />
         </footer>
       )}
     </div>

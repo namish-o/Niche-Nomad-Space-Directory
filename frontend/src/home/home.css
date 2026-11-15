@@ -35,6 +35,7 @@
 .home-error { margin: var(--space-sm) 0 0; color: var(--color-bad); font-size: var(--text-md); }
 
 .home-chart { margin: 0; min-width: 0; }
+.home-chart-tag { margin: 0 0 var(--space-md); font: 400 clamp(26px, 2.6vw, 36px)/1.1 var(--font-retro); color: var(--color-accent); letter-spacing: 0.01em; }
 .home-chart svg { display: block; width: 100%; height: auto; cursor: crosshair; border: var(--rule-hair) solid var(--color-rule-2); border-radius: var(--radius-card); }
 .hc-bg { fill: var(--color-black); }
 .hc-grid { stroke: var(--color-sky-grid); stroke-width: 1; }

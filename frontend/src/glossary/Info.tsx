@@ -1,7 +1,7 @@
 // A small "?" button that explains a word. Works with a mouse, a keyboard and a tap.
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { TERMS, type TermKey } from "./terms";
+import { TERMS, type Term, type TermKey } from "./terms";
 import "./glossary.css";
 
 export default function Info({ term }: { term: TermKey }) {
@@ -70,9 +70,20 @@ export default function Info({ term }: { term: TermKey }) {
         >
           <strong>{t.word}</strong>
           {t.text}
+          <MoreLink term={t} />
         </span>,
           document.body, // outside panels with backdrop-filter, which would break position: fixed
         )}
     </>
+  );
+}
+
+/** "Learn more on ESA/Hubble" link for terms that have one. */
+export function MoreLink({ term }: { term: Term }) {
+  if (!term.more) return null;
+  return (
+    <a className="info-more" href={term.more} target="_blank" rel="noreferrer">
+      Learn more on ESA/Hubble
+    </a>
   );
 }

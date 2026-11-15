@@ -5,6 +5,8 @@
 export interface Term {
   word: string;
   text: string;
+  /** Optional "learn more" page on ESA/Hubble (texts there are CC BY 4.0, credit ESA/Hubble). */
+  more?: string;
 }
 
 export const TERMS = {
@@ -39,6 +41,7 @@ export const TERMS = {
   wavelength: {
     word: "Wavelength",
     text: "Light travels as waves, and the distance between wave peaks sets its colour. Our eyes see wavelengths from about 0.4 to 0.7 microns. SPHEREx sees longer ones that are invisible to us.",
+    more: "https://esahubble.org/wordbank/electromagnetic-spectrum/",
   },
   micron: {
     word: "Micron (µm)",
@@ -51,6 +54,7 @@ export const TERMS = {
   infrared: {
     word: "Infrared",
     text: "Light with longer waves than red, which our eyes cannot see but we feel as warmth. Cool objects such as brown dwarfs glow mostly in infrared, so an infrared telescope can spot them.",
+    more: "https://esahubble.org/wordbank/infrared-astronomy/",
   },
   spherex: {
     word: "SPHEREx",
@@ -87,6 +91,7 @@ export const TERMS = {
   spectrum: {
     word: "Spectrum",
     text: "How bright something is at each colour (wavelength). It can tell you how hot an object is and what it is made of.",
+    more: "https://esahubble.org/wordbank/spectrograph-spectroscopy/",
   },
   lightcurve: {
     word: "Light curve",
@@ -179,6 +184,11 @@ export const TERMS = {
   planetX: {
     word: "Planet X",
     text: "A possible undiscovered planet far beyond Neptune. If it exists it would be cold and dim, so it would show up best as a slowly moving infrared dot.",
+  },
+  hubble: {
+    word: "Hubble Space Telescope",
+    text: "A space telescope run by ESA and NASA that orbits about 600 km above Earth and sees visible, ultraviolet and some infrared light. SPHEREx maps the whole sky in less detail, while Hubble zooms in on small patches.",
+    more: "https://esahubble.org/about/",
   },
 } satisfies Record<string, Term>;
 

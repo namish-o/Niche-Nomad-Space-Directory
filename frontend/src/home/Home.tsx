@@ -2,6 +2,7 @@
 // it opens the blink viewer there. The viewer reads its position from the URL,
 // so all this page does is build that URL.
 import Tour from "../tour/Tour";
+import SourcesButton from "../sources/SourcesButton";
 import { HOME_STEPS } from "../tour/steps";
 import { lazy, Suspense, useEffect, useState } from "react";
 import { fetchTargets, type Target } from "../api/client";
@@ -98,6 +99,7 @@ export default function Home({ onGo }: Props) {
         </section>
 
         <figure className="home-chart">
+          <p className="home-chart-tag">SPHEREx images, sorted by Niche</p>
           <Suspense fallback={<div className="s3d-loading">Loading Niche in 3D…</div>}>
             <Space3D embedded onOpen={(o) => onGo({ ra: o.ra, dec: o.dec, band: o.band })} />
           </Suspense>
@@ -141,6 +143,7 @@ export default function Home({ onGo }: Props) {
         </a>
         .
         <p className="team-credit">Niche Nomads: Anish M., Namish O., Jayanth J., Arnav B.</p>
+        <SourcesButton />
       </footer>
     </div>
   );

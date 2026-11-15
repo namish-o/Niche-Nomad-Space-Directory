@@ -20,3 +20,10 @@
   to = "https://simbad.cds.unistra.fr/:splat"
   status = 200
   force = true
+
+# IMAP real-time solar wind (I-ALiRT), for the 3D map.
+[[redirects]]
+  from = "/ialirt/*"
+  to = "https://ialirt.imap-mission.com/:splat"
+  status = 200
+  force = true

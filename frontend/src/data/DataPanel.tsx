@@ -147,7 +147,12 @@ function skipNote(s: Spectrum) {
   return `${skipped.length} skipped because flagged pixels cover the source. `;
 }
 
-function SpectrumSection({ view }: { view: View }) {
+/** Spectrum of one sky position. Also used by the 3D map's star cards. */
+export function SpectrumSection({ view, label = "Measure spectrum at the centre", hint }: {
+  view: { ra: number; dec: number };
+  label?: string;
+  hint?: string;
+}) {
   const [result, setResult] = useState<Async<Spectrum>>({ status: "idle" });
   useEffect(() => setResult({ status: "idle" }), [view.ra, view.dec]);
 
@@ -170,12 +175,11 @@ function SpectrumSection({ view }: { view: View }) {
   return (
     <div className="spectrum">
       <button onClick={measure} disabled={result.status === "loading"}>
-        {result.status === "loading" ? "Measuring…" : "Measure spectrum at the centre"}
+        {result.status === "loading" ? "Measuring…" : label}
       </button>
       {result.status === "idle" && (
         <p className="hint">
-          Measures the brightness at the marked centre in every exposure of all six detectors. Double-click an
-          object first to centre it.
+          {hint ?? "Measures the brightness at the marked centre in every exposure of all six detectors. Double-click an object first to centre it."}
         </p>
       )}
       {result.status === "loading" && (
